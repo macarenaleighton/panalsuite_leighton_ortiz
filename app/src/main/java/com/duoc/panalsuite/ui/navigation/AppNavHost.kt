@@ -14,8 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.duoc.panalsuite.ui.InboxScreen
 import com.duoc.panalsuite.ui.LoginScreen
 import com.duoc.panalsuite.ui.SplashScreen
+import com.duoc.panalsuite.viewmodel.InboxViewModel
 import com.duoc.panalsuite.viewmodel.LoginViewModel
 import com.duoc.panalsuite.viewmodel.SessionViewModel
 
@@ -23,7 +25,8 @@ import com.duoc.panalsuite.viewmodel.SessionViewModel
 fun AppNavHost(
     navController: NavHostController,
     sessionViewModel: SessionViewModel,
-    loginViewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
+    inboxViewModel: InboxViewModel
 ) {
     NavHost(
         navController = navController,
@@ -63,15 +66,33 @@ fun AppNavHost(
         }
 
         composable(Routes.INBOX) {
-            PendingScreen(
-                title = "Bandeja (Etapa 5)",
-                actionLabel = "Cerrar sesión",
-                onAction = {
+            InboxScreen(
+                viewModel = inboxViewModel,
+                onTicketClick = { ticketId -> navController.navigate(Routes.ticketDetail(ticketId)) },
+                onCreateTicketClick = { navController.navigate(Routes.TICKET_FORM) },
+                onLogout = {
                     sessionViewModel.logout()
+                    inboxViewModel.onStatusSelected(null)
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(Routes.INBOX) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(Routes.TICKET_FORM) {
+            PendingScreen(
+                title = "Nueva solicitud (Etapa 6)",
+                actionLabel = "Volver",
+                onAction = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.TICKET_DETAIL) {
+            PendingScreen(
+                title = "Detalle (Etapa 7)",
+                actionLabel = "Volver",
+                onAction = { navController.popBackStack() }
             )
         }
     }
