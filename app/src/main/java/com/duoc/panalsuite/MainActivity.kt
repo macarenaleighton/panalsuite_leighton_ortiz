@@ -15,6 +15,7 @@ import com.duoc.panalsuite.ui.theme.PanalSuiteTheme
 import com.duoc.panalsuite.viewmodel.InboxViewModel
 import com.duoc.panalsuite.viewmodel.LoginViewModel
 import com.duoc.panalsuite.viewmodel.SessionViewModel
+import com.duoc.panalsuite.viewmodel.TicketDetailViewModel
 import com.duoc.panalsuite.viewmodel.TicketFormViewModel
 
 class MainActivity : ComponentActivity() {
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels()
     private val inboxViewModel: InboxViewModel by viewModels()
     private val ticketFormViewModel: TicketFormViewModel by viewModels()
+    private val ticketDetailViewModel: TicketDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +41,8 @@ class MainActivity : ComponentActivity() {
                         sessionViewModel = sessionViewModel,
                         loginViewModel = loginViewModel,
                         inboxViewModel = inboxViewModel,
-                        ticketFormViewModel = ticketFormViewModel
+                        ticketFormViewModel = ticketFormViewModel,
+                        ticketDetailViewModel = ticketDetailViewModel
                     )
                 }
             }

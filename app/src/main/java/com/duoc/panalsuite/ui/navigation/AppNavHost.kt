@@ -4,23 +4,21 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.duoc.panalsuite.ui.InboxScreen
 import com.duoc.panalsuite.ui.LoginScreen
 import com.duoc.panalsuite.ui.SplashScreen
+import com.duoc.panalsuite.ui.TicketDetailScreen
 import com.duoc.panalsuite.ui.TicketFormScreen
 import com.duoc.panalsuite.viewmodel.InboxViewModel
 import com.duoc.panalsuite.viewmodel.LoginViewModel
 import com.duoc.panalsuite.viewmodel.SessionViewModel
+import com.duoc.panalsuite.viewmodel.TicketDetailViewModel
 import com.duoc.panalsuite.viewmodel.TicketFormViewModel
 
 @Composable
@@ -29,7 +27,8 @@ fun AppNavHost(
     sessionViewModel: SessionViewModel,
     loginViewModel: LoginViewModel,
     inboxViewModel: InboxViewModel,
-    ticketFormViewModel: TicketFormViewModel
+    ticketFormViewModel: TicketFormViewModel,
+    ticketDetailViewModel: TicketDetailViewModel
 ) {
     NavHost(
         navController = navController,
@@ -75,8 +74,8 @@ fun AppNavHost(
                 onCreateTicketClick = { navController.navigate(Routes.TICKET_FORM) },
                 onLogout = {
                     sessionViewModel.logout()
-                    inboxViewModel.onStatusSelected(null) // el próximo usuario parte sin filtro
-                    ticketFormViewModel.reset()           // y sin un formulario a medio llenar
+                    inboxViewModel.onStatusSelected(null)
+                    ticketFormViewModel.reset()
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(Routes.INBOX) { inclusive = true }
                     }
@@ -96,33 +95,16 @@ fun AppNavHost(
             )
         }
 
-        composable(Routes.TICKET_DETAIL) {
-            PendingScreen(
-                title = "Detalle (Etapa 7)",
-                actionLabel = "Volver",
-                onAction = { navController.popBackStack() }
+        composable(
+            route = Routes.TICKET_DETAIL,
+            arguments = listOf(navArgument("ticketId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val ticketId = backStackEntry.arguments?.getLong("ticketId") ?: 0L
+            TicketDetailScreen(
+                viewModel = ticketDetailViewModel,
+                ticketId = ticketId,
+                onBack = { navController.popBackStack() }
             )
-        }
-    }
-}
-
-@Composable
-private fun PendingScreen(
-    title: String,
-    actionLabel: String? = null,
-    onAction: () -> Unit = {}
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = title)
-        if (actionLabel != null) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onAction) { Text(actionLabel) }
         }
     }
 }
