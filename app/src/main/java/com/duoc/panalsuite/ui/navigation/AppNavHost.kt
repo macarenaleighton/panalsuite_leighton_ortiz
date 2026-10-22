@@ -14,13 +14,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.duoc.panalsuite.ui.LoginScreen
 import com.duoc.panalsuite.ui.SplashScreen
+import com.duoc.panalsuite.viewmodel.LoginViewModel
 import com.duoc.panalsuite.viewmodel.SessionViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    sessionViewModel: SessionViewModel
+    sessionViewModel: SessionViewModel,
+    loginViewModel: LoginViewModel
 ) {
     NavHost(
         navController = navController,
@@ -38,7 +41,7 @@ fun AppNavHost(
                 sessionViewModel = sessionViewModel,
                 onSessionChecked = { isLoggedIn ->
                     navController.navigate(if (isLoggedIn) Routes.INBOX else Routes.LOGIN) {
-                        popUpTo(Routes.SPLASH) { inclusive = true } // Atrás no vuelve al splash
+                        popUpTo(Routes.SPLASH) { inclusive = true }
                     }
                 }
             )
@@ -48,11 +51,28 @@ fun AppNavHost(
             route = Routes.LOGIN,
             enterTransition = { fadeIn(tween(ANIMATION_DURATION_MS)) }
         ) {
-            PendingScreen(title = "Login (Etapa 4)")
+            LoginScreen(
+                viewModel = loginViewModel,
+                onLoginSuccess = {
+                    loginViewModel.reset()
+                    navController.navigate(Routes.INBOX) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(Routes.INBOX) {
-            PendingScreen(title = "Bandeja (Etapa 5)")
+            PendingScreen(
+                title = "Bandeja (Etapa 5)",
+                actionLabel = "Cerrar sesión",
+                onAction = {
+                    sessionViewModel.logout()
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.INBOX) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }

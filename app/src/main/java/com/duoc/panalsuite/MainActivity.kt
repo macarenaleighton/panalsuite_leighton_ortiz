@@ -12,11 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.duoc.panalsuite.ui.navigation.AppNavHost
 import com.duoc.panalsuite.ui.theme.PanalSuiteTheme
+import com.duoc.panalsuite.viewmodel.LoginViewModel
 import com.duoc.panalsuite.viewmodel.SessionViewModel
 
 class MainActivity : ComponentActivity() {
 
     private val sessionViewModel: SessionViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +32,8 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     AppNavHost(
                         navController = navController,
-                        sessionViewModel = sessionViewModel
+                        sessionViewModel = sessionViewModel,
+                        loginViewModel = loginViewModel
                     )
                 }
             }
