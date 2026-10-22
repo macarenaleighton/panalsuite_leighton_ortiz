@@ -17,16 +17,19 @@ import androidx.navigation.compose.composable
 import com.duoc.panalsuite.ui.InboxScreen
 import com.duoc.panalsuite.ui.LoginScreen
 import com.duoc.panalsuite.ui.SplashScreen
+import com.duoc.panalsuite.ui.TicketFormScreen
 import com.duoc.panalsuite.viewmodel.InboxViewModel
 import com.duoc.panalsuite.viewmodel.LoginViewModel
 import com.duoc.panalsuite.viewmodel.SessionViewModel
+import com.duoc.panalsuite.viewmodel.TicketFormViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     sessionViewModel: SessionViewModel,
     loginViewModel: LoginViewModel,
-    inboxViewModel: InboxViewModel
+    inboxViewModel: InboxViewModel,
+    ticketFormViewModel: TicketFormViewModel
 ) {
     NavHost(
         navController = navController,
@@ -72,7 +75,8 @@ fun AppNavHost(
                 onCreateTicketClick = { navController.navigate(Routes.TICKET_FORM) },
                 onLogout = {
                     sessionViewModel.logout()
-                    inboxViewModel.onStatusSelected(null)
+                    inboxViewModel.onStatusSelected(null) // el próximo usuario parte sin filtro
+                    ticketFormViewModel.reset()           // y sin un formulario a medio llenar
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(Routes.INBOX) { inclusive = true }
                     }
@@ -81,10 +85,14 @@ fun AppNavHost(
         }
 
         composable(Routes.TICKET_FORM) {
-            PendingScreen(
-                title = "Nueva solicitud (Etapa 6)",
-                actionLabel = "Volver",
-                onAction = { navController.popBackStack() }
+            TicketFormScreen(
+                viewModel = ticketFormViewModel,
+                onTicketCreated = { ticketId ->
+                    navController.navigate(Routes.ticketDetail(ticketId)) {
+                        popUpTo(Routes.INBOX)
+                    }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 
